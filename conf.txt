@@ -1,0 +1,4 @@
+export ARCH=arm
+export CROSS_COMPILE=/home/voodoo/dl/gcc/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-
+make defconfig
+./scripts/kconfig/merge_config.sh .config arch/arm/configs/fragment-01-multiv7_cleanup.config arch/arm/configs/fragment-02-multiv7_addons.config ../patches/fragment-03-systemd.config ../patches/fragment-04-modules.config
