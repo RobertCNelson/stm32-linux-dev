@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# Copyright (c) 2009-2020 Robert Nelson <robertcnelson@gmail.com>
+# Copyright (c) 2009-2021 Robert Nelson <robertcnelson@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -41,16 +41,22 @@ fi
 
 dl_gcc_generic () {
 	WGET="wget -c --directory-prefix=${gcc_dir}/"
-	if [ ! -f "${gcc_dir}/${gcc_filename_prefix}/${datestamp}" ] ; then
+	if [ "x${extracted_dir}" = "x" ] ; then
+		filename_prefix=${gcc_filename_prefix}
+	else
+		filename_prefix=${extracted_dir}
+	fi
+
+	if [ ! -f "${gcc_dir}/${filename_prefix}/${datestamp}" ] ; then
 		echo "Installing Toolchain: ${toolchain}"
 		echo "-----------------------------"
 		${WGET} "${gcc_html_path}${gcc_filename_prefix}.tar.xz"
-		if [ -d "${gcc_dir}/${gcc_filename_prefix}" ] ; then
-			rm -rf "${gcc_dir}/${gcc_filename_prefix}" || true
+		if [ -d "${gcc_dir}/${filename_prefix}" ] ; then
+			rm -rf "${gcc_dir}/${filename_prefix}" || true
 		fi
 		tar -xf "${gcc_dir}/${gcc_filename_prefix}.tar.xz" -C "${gcc_dir}/"
-		if [ -f "${gcc_dir}/${gcc_filename_prefix}/${binary}gcc" ] ; then
-			touch "${gcc_dir}/${gcc_filename_prefix}/${datestamp}"
+		if [ -f "${gcc_dir}/${filename_prefix}/${binary}gcc" ] ; then
+			touch "${gcc_dir}/${filename_prefix}/${datestamp}"
 		fi
 	else
 		echo "Using Existing Toolchain: ${toolchain}"
@@ -60,25 +66,13 @@ dl_gcc_generic () {
 		#using native gcc
 		CC=
 	else
-		CC="${gcc_dir}/${gcc_filename_prefix}/${binary}"
+		CC="${gcc_dir}/${filename_prefix}/${binary}"
 	fi
 }
 
 gcc_toolchain () {
+	unset extracted_dir
 	case "${toolchain}" in
-	gcc_linaro_eabi_4_8)
-		#
-		#https://releases.linaro.org/archive/14.04/components/toolchain/binaries/gcc-linaro-arm-none-eabi-4.8-2014.04_linux.tar.xz
-		#
-
-		gcc_html_path="https://releases.linaro.org/archive/14.04/components/toolchain/binaries/"
-		gcc_filename_prefix="gcc-linaro-arm-none-eabi-4.8-2014.04_linux"
-		gcc_banner="arm-none-eabi-gcc (crosstool-NG linaro-1.13.1-4.8-2014.04 - Linaro GCC 4.8-2014.04) 4.8.3 20140401 (prerelease)"
-		gcc_copyright="2013"
-		datestamp="2014.04-gcc-arm-none-eabi"
-
-		binary="bin/arm-none-eabi-"
-		;;
 	gcc_linaro_eabi_4_9)
 		#
 		#https://releases.linaro.org/components/toolchain/binaries/4.9-2017.01/arm-eabi/gcc-linaro-4.9.4-2017.01-x86_64_arm-eabi.tar.xz
@@ -167,31 +161,18 @@ gcc_toolchain () {
 
 		binary="bin/arm-none-eabi-"
 		;;
-	gcc_linaro_gnueabihf_4_7)
+	gcc_arm_eabi_10)
 		#
-		#https://releases.linaro.org/archive/13.04/components/toolchain/binaries/gcc-linaro-arm-linux-gnueabihf-4.7-2013.04-20130415_linux.tar.xz
-		#
-
-		gcc_html_path="https://releases.linaro.org/archive/13.04/components/toolchain/binaries/"
-		gcc_filename_prefix="gcc-linaro-arm-linux-gnueabihf-4.7-2013.04-20130415_linux"
-		gcc_banner="arm-linux-gnueabihf-gcc (crosstool-NG linaro-1.13.1-4.7-2013.04-20130415 - Linaro GCC 2013.04) 4.7.3 20130328 (prerelease)"
-		gcc_copyright="2012"
-		datestamp="2013.04-gcc-arm-linux-gnueabihf"
-
-		binary="bin/arm-linux-gnueabihf-"
-		;;
-	gcc_linaro_gnueabihf_4_8)
-		#
-		#https://releases.linaro.org/archive/14.04/components/toolchain/binaries/gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux.tar.xz
+		#https://developer.arm.com/-/media/Files/downloads/gnu-a/10.2-2020.11/binrel/gcc-arm-10.2-2020.11-x86_64-arm-none-eabi.tar.xz
 		#
 
-		gcc_html_path="https://releases.linaro.org/archive/14.04/components/toolchain/binaries/"
-		gcc_filename_prefix="gcc-linaro-arm-linux-gnueabihf-4.8-2014.04_linux"
-		gcc_banner="arm-linux-gnueabihf-gcc (crosstool-NG linaro-1.13.1-4.8-2014.04 - Linaro GCC 4.8-2014.04) 4.8.3 20140401 (prerelease)"
-		gcc_copyright="2013"
-		datestamp="2014.04-gcc-arm-linux-gnueabihf"
+		gcc_html_path="https://developer.arm.com/-/media/Files/downloads/gnu-a/10.2-2020.11/binrel/"
+		gcc_filename_prefix="gcc-arm-10.2-2020.11-x86_64-arm-none-eabi"
+		gcc_banner="arm-none-eabi-gcc (GNU Toolchain for the A-profile Architecture 10.2-2020.11 (arm-10.16)) 10.2.1 20201103"
+		gcc_copyright="2020"
+		datestamp="2020.11-gcc-arm-none-eabi"
 
-		binary="bin/arm-linux-gnueabihf-"
+		binary="bin/arm-none-eabi-"
 		;;
 	gcc_linaro_gnueabihf_4_9)
 		#
@@ -284,6 +265,19 @@ gcc_toolchain () {
 
 		binary="bin/arm-none-linux-gnueabihf-"
 		;;
+	gcc_arm_gnueabihf_10)
+		#
+		#https://developer.arm.com/-/media/Files/downloads/gnu-a/10.2-2020.11/binrel/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf.tar.xz
+		#
+
+		gcc_html_path="https://developer.arm.com/-/media/Files/downloads/gnu-a/10.2-2020.11/binrel/"
+		gcc_filename_prefix="gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf"
+		gcc_banner="arm-none-linux-gnueabihf-gcc (GNU Toolchain for the A-profile Architecture 10.2-2020.11 (arm-10.16)) 10.2.1 20201103"
+		gcc_copyright="2020"
+		datestamp="2020.11-gcc-arm-linux-gnueabihf"
+
+		binary="bin/arm-none-linux-gnueabihf-"
+		;;
 	gcc_linaro_aarch64_gnu_5)
 		#
 		#https://releases.linaro.org/components/toolchain/binaries/5.4-2017.05/aarch64-linux-gnu/gcc-linaro-5.4.1-2017.05-x86_64_aarch64-linux-gnu.tar.xz
@@ -362,6 +356,33 @@ gcc_toolchain () {
 
 		binary="bin/aarch64-none-linux-gnu-"
 		;;
+	gcc_arm_aarch64_gnu_10)
+		#
+		#https://developer.arm.com/-/media/Files/downloads/gnu-a/10.2-2020.11/binrel/gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu.tar.xz
+		#
+
+		gcc_html_path="https://developer.arm.com/-/media/Files/downloads/gnu-a/10.2-2020.11/binrel/"
+		gcc_filename_prefix="gcc-arm-10.2-2020.11-x86_64-aarch64-none-linux-gnu"
+		gcc_banner="aarch64-none-linux-gnu-gcc (GNU Toolchain for the A-profile Architecture 10.2-2020.11 (arm-10.16)) 10.2.1 20201103"
+		gcc_copyright="2020"
+		datestamp="2020.11-gcc-aarch64-linux-gnu"
+
+		binary="bin/aarch64-none-linux-gnu-"
+		;;
+	gcc_10_riscv64)
+		#
+		#https://mirrors.edge.kernel.org/pub/tools/crosstool/files/bin/x86_64/10.1.0/x86_64-gcc-10.1.0-nolibc-riscv64-linux.tar.xz
+		#
+
+		gcc_html_path="https://mirrors.edge.kernel.org/pub/tools/crosstool/files/bin/x86_64/10.1.0/"
+		gcc_filename_prefix="x86_64-gcc-10.1.0-nolibc-riscv64-linux"
+		extracted_dir="gcc-10.1.0-nolibc/riscv64-linux"
+		gcc_banner="riscv64-linux-gcc (GCC) 10.1.0"
+		gcc_copyright="2020"
+		datestamp="2020.10.1.0-riscv64-linux-gcc"
+
+		binary="bin/riscv64-linux-"
+		;;
 	*)
 		echo "bug: maintainer forgot to set:"
 		echo "toolchain=\"xzy\" in version.sh"
@@ -383,8 +404,16 @@ fi
 if [ "x${KERNEL_ARCH}" = "xarm64" ] ; then
 	check="aarch64"
 fi
+if [ "x${KERNEL_ARCH}" = "xriscv" ] ; then
+	check="riscv"
+fi
 
-GCC_TEST=$(LC_ALL=C "${CC}gcc" -v 2>&1 | grep "Target:" | grep ${check} || true)
+if [ "x${check}" = "x" ] ; then
+	echo "ERROR: fix: scripts/gcc.sh..."
+	exit 2
+else
+	GCC_TEST=$(LC_ALL=C "${CC}gcc" -v 2>&1 | grep "Target:" | grep ${check} || true)
+fi
 
 if [ "x${GCC_TEST}" = "x" ] ; then
 	echo "-----------------------------"
