@@ -8,7 +8,10 @@ build_prefix="-stm32-r"
 branch_prefix="v"
 branch_postfix=".x"
 
+#Changes
 #https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/Documentation/process/changes.rst?h=v5.10-rc1
+#
+#Cross Compilers
 #arm
 KERNEL_ARCH=arm
 DEBARCH=armhf
@@ -52,7 +55,7 @@ KERNEL_TAG=${KERNEL_REL}.10
 #https://mirrors.edge.kernel.org/pub/linux/kernel/projects/rt/5.10/
 kernel_rt=".x-rty"
 #Kernel Build
-BUILD=${build_prefix}0.1
+BUILD=${build_prefix}0.2
 
 #v6.X-rcX + upto SHA
 #prev_KERNEL_SHA=""
@@ -62,4 +65,9 @@ BUILD=${build_prefix}0.1
 BRANCH="${branch_prefix}${KERNEL_REL}${branch_postfix}"
 
 DISTRO=xross
+
+sdk_git_old_release="ce6891abb1c895d4849e6f784615687341b3dbde"
+sdk_git_new_release="ce6891abb1c895d4849e6f784615687341b3dbde"
+SDK="v5.10-stm32mp-r1"
+
 #

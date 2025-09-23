@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2009-2021 Robert Nelson <robertcnelson@gmail.com>
+# Copyright (c) 2009-2025 Robert Nelson <robertcnelson@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,10 @@ git_bin=$(which git)
 #git: --no-edit
 
 git="${git_bin} am"
-#git_patchset=""
+git_patchset="https://github.com/STMicroelectronics/linux.git"
+if [ "${USE_LOCAL_GIT_MIRROR}" ] ; then
+	git_patchset="http://forgejo.gfnd.rcn-ee.org:3000/STMicroelectronics/linux.git"
+fi
 #git_opts
 
 if [ "${RUN_BISECT}" ] ; then
@@ -97,10 +100,27 @@ cherrypick () {
 }
 
 external_git () {
-	git_tag=""
-	echo "pulling: ${git_tag}"
+	git_tag="v5.10-stm32mp"
+	echo "pulling: [${git_patchset} ${git_tag}]"
 	${git_bin} pull --no-edit ${git_patchset} ${git_tag}
-	${git_bin} describe
+	top_of_branch=$(${git_bin} describe)
+	if [ ! "x${sdk_git_new_release}" = "x" ] ; then
+		${git_bin} checkout master -f
+		test_for_branch=$(${git_bin} branch --list "v${KERNEL_TAG}${BUILD}")
+		if [ "x${test_for_branch}" != "x" ] ; then
+			${git_bin} branch "v${KERNEL_TAG}${BUILD}" -D
+		fi
+		${git_bin} checkout ${sdk_git_new_release} -b v${KERNEL_TAG}${BUILD} -f
+		current_git=$(${git_bin} describe)
+		echo "${current_git}"
+
+		if [ ! "x${top_of_branch}" = "x${current_git}" ] ; then
+			echo "INFO: external git repo has updates..."
+		fi
+	else
+		echo "${top_of_branch}"
+	fi
+	#exit 2
 }
 
 local_patch () {
@@ -108,18 +128,16 @@ local_patch () {
 	${git} "${DIR}/patches/dir/0001-patch.patch"
 }
 
-#external_git
-#local_patch
-
 pre_backports () {
 	echo "dir: backports/${subsystem}"
 
 	cd ~/linux-src/
-	${git_bin} pull --no-edit https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git master
-	${git_bin} pull --no-edit https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git master --tags
-	${git_bin} pull --no-edit https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master --tags
+	${git_bin} pull --no-edit https://kernel.googlesource.com/pub/scm/linux/kernel/git/stable/linux.git master
+	${git_bin} pull --no-edit https://kernel.googlesource.com/pub/scm/linux/kernel/git/stable/linux.git master --tags
+	${git_bin} pull --no-edit https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux.git master --tags
 	if [ ! "x${backport_tag}" = "x" ] ; then
-		${git_bin} checkout ${backport_tag} -b tmp
+		echo "${git_bin} checkout ${backport_tag} -f"
+		${git_bin} checkout ${backport_tag} -f
 	fi
 	cd -
 }
@@ -127,7 +145,7 @@ pre_backports () {
 post_backports () {
 	if [ ! "x${backport_tag}" = "x" ] ; then
 		cd ~/linux-src/
-		${git_bin} checkout master -f ; ${git_bin} branch -D tmp
+		${git_bin} checkout master -f
 		cd -
 	fi
 
@@ -137,9 +155,13 @@ post_backports () {
 		mkdir -p ../patches/backports/${subsystem}/
 	fi
 	${git_bin} format-patch -1 -o ../patches/backports/${subsystem}/
+	exit 2
 }
 
-patch_backports (){
+external_git
+#local_patch
+
+patch_backports () {
 	echo "dir: backports/${subsystem}"
 	${git} "${DIR}/patches/backports/${subsystem}/0001-backports-${subsystem}-from-linux.git.patch"
 }
@@ -184,27 +206,8 @@ reverts () {
 #backports
 #reverts
 
-dir 'stm32'
-
 packaging () {
-	#do_backport="enable"
-	if [ "x${do_backport}" = "xenable" ] ; then
-		backport_tag="v5.10.45"
-
-		subsystem="bindeb-pkg"
-		#regenerate="enable"
-		if [ "x${regenerate}" = "xenable" ] ; then
-			pre_backports
-
-			cp -v ~/linux-src/scripts/package/* ./scripts/package/
-
-			post_backports
-			exit 2
-		else
-			patch_backports
-		fi
-	fi
-
+	echo "Update: package scripts"
 	${git} "${DIR}/patches/backports/bindeb-pkg/0002-builddeb-Install-our-dtbs-under-boot-dtbs-version.patch"
 }
 
