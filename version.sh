@@ -51,11 +51,11 @@ linux_repo="https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/li
 linux_stable_repo="https://kernel.googlesource.com/pub/scm/linux/kernel/git/stable/linux.git"
 #
 KERNEL_REL=5.10
-KERNEL_TAG=${KERNEL_REL}.10
+KERNEL_TAG=${KERNEL_REL}.61
 #https://mirrors.edge.kernel.org/pub/linux/kernel/projects/rt/5.10/
 kernel_rt=".x-rty"
 #Kernel Build
-BUILD=${build_prefix}0.2
+BUILD=${build_prefix}0.3
 
 #v6.X-rcX + upto SHA
 #prev_KERNEL_SHA=""
@@ -67,7 +67,7 @@ BRANCH="${branch_prefix}${KERNEL_REL}${branch_postfix}"
 DISTRO=xross
 
 sdk_git_old_release="ce6891abb1c895d4849e6f784615687341b3dbde"
-sdk_git_new_release="ce6891abb1c895d4849e6f784615687341b3dbde"
-SDK="v5.10-stm32mp-r1"
+sdk_git_new_release="64e6a220537c5cd7e8cc5b723ef09c6341388c98"
+SDK="v5.10-stm32mp-r2"
 
 #
