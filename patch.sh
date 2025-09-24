@@ -100,7 +100,7 @@ cherrypick () {
 }
 
 external_git () {
-	git_tag="v5.10-stm32mp"
+	git_tag="v5.15-stm32mp"
 	echo "pulling: [${git_patchset} ${git_tag}]"
 	${git_bin} pull --no-edit ${git_patchset} ${git_tag}
 	top_of_branch=$(${git_bin} describe)
@@ -117,6 +117,14 @@ external_git () {
 		if [ ! "x${top_of_branch}" = "x${current_git}" ] ; then
 			echo "INFO: external git repo has updates..."
 		fi
+
+		if [ -f ./arch/arm/configs/fragment-01-multiv7_cleanup.config ] ; then
+			cp -v ./arch/arm/configs/fragment-01-multiv7_cleanup.config ../patches/
+		fi
+		if [ -f ./arch/arm/configs/fragment-02-multiv7_addons.config ] ; then
+			cp -v ./arch/arm/configs/fragment-02-multiv7_addons.config ../patches/
+		fi
+
 	else
 		echo "${top_of_branch}"
 	fi
