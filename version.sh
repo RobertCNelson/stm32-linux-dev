@@ -5,7 +5,7 @@ ARCH=$(uname -m)
 config="multi_v7_defconfig"
 
 build_prefix="-stm32-r"
-branch_prefix="v"
+branch_prefix="stm32-arm32-v"
 branch_postfix=".x"
 
 #https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/Documentation/process/changes.rst?h=v5.15-rc1
