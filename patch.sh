@@ -100,7 +100,7 @@ cherrypick () {
 }
 
 external_git () {
-	git_tag="v5.15-stm32mp"
+	git_tag="v6.1-stm32mp"
 	echo "pulling: [${git_patchset} ${git_tag}]"
 	${git_bin} pull --no-edit ${git_patchset} ${git_tag}
 	top_of_branch=$(${git_bin} describe)

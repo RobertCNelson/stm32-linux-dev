@@ -8,15 +8,18 @@ build_prefix="-stm32-r"
 branch_prefix="stm32-arm32-v"
 branch_postfix=".x"
 
-#https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/Documentation/process/changes.rst?h=v5.15-rc1
+#Changes
+#https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/Documentation/process/changes.rst?h=v6.1-rc1
+#
+#Cross Compilers
 #arm
 KERNEL_ARCH=arm
 DEBARCH=armhf
 #toolchain="gcc_8_arm"
 #toolchain="gcc_9_arm"
 #toolchain="gcc_10_arm"
-toolchain="gcc_11_arm"
-#toolchain="gcc_12_arm"
+#toolchain="gcc_11_arm"
+toolchain="gcc_12_arm"
 #toolchain="gcc_13_arm"
 #toolchain="gcc_14_arm"
 #toolchain="gcc_15_arm"
@@ -47,8 +50,8 @@ toolchain="gcc_11_arm"
 linux_repo="https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux.git"
 linux_stable_repo="https://kernel.googlesource.com/pub/scm/linux/kernel/git/stable/linux.git"
 #
-KERNEL_REL=5.15
-KERNEL_TAG=${KERNEL_REL}.145
+KERNEL_REL=6.1
+KERNEL_TAG=${KERNEL_REL}.82
 #https://mirrors.edge.kernel.org/pub/linux/kernel/projects/rt/5.15/
 kernel_rt=".x-rty"
 #Kernel Build
@@ -63,8 +66,8 @@ BRANCH="${branch_prefix}${KERNEL_REL}${branch_postfix}"
 
 DISTRO=xross
 
-sdk_git_old_release="a168b5a6848f8512572647de8d5bd0d522428516"
-sdk_git_new_release="a168b5a6848f8512572647de8d5bd0d522428516"
-SDK="v5.15-stm32mp-r2"
+sdk_git_old_release="c3e95fcd0038c21b414a80b77fb09a2063e51c9a"
+sdk_git_new_release="c3e95fcd0038c21b414a80b77fb09a2063e51c9a"
+SDK="v6.1-stm32mp-r2.1"
 
 #
